@@ -32,17 +32,17 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       run: touch "$nimble_srcDir/dummy.nimble"
 
-    # TODO: Should I use continue-on-failure?
     - name: "Try to checkout branch that matches version"
       shell: bash
+      continue-on-error: true
       working-directory: ${{ inputs.project-dir }}
       run: |
+        git fetch --tags
         found_ver=$(git tag -l | grep -E -m 1 "v?$nimble_version")
         if [ ! -z "$found_ver" ]
         then
           git checkout "$found_ver"
         fi
-        git branch 
 
     - name: "Run doc generation"
       shell: bash
