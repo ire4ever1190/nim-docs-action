@@ -1,0 +1,32 @@
+name: "Nim documentation generator"
+description: "Automatically builds documentation with a few extra niceties that I like"
+inputs:
+  main-file:
+    description: "Main Nim file which to build documentation with (relative to root of repo)"
+    required: true
+  out-dir:
+    description: "Where to put the files"
+    required: true
+    default: "site/"
+
+runs:
+  using: composite
+  steps:
+    # Convert all the nimble variables into ENV variables for easy access
+    - name: "Convert nimble files to ENV variables"
+      shell: bash
+      run: |
+        # Convert all the variables to be `nimble_` prefixed variables
+        nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\"\\2\"/" >> $GITHUB_ENV
+
+    # To remove the src/ prefix in the pages we add a dummy
+    # .nimble file so that Nim thinks the files are root level
+    - name: "Create dummy nimble file"
+      shell: bash
+      run: touch "$nimble_srcDir/dummy.nimble"
+
+    - name: "Run doc generation"
+      shell: bash
+      run: nimble doc --project --outdir=${{ inputs.out-dir }} ${{ inputs.main-file }}
+
+
