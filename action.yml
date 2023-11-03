@@ -4,10 +4,16 @@ inputs:
   main-file:
     description: "Main Nim file which to build documentation with (relative to root of repo)"
     required: true
+
   out-dir:
     description: "Where to put the files"
     required: true
     default: "site/"
+
+  src-dir:
+    description: "Folder containing the .nimble file"
+    required: true
+    default: "./"
 
 runs:
   using: composite
@@ -15,6 +21,7 @@ runs:
     # Convert all the nimble variables into ENV variables for easy access
     - name: "Convert nimble files to ENV variables"
       shell: bash
+      working-directory: ${{ inputs.src-dir }}
       run: |
         # Convert all the variables to be `nimble_` prefixed variables
         nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\"\\2\"/" >> $GITHUB_ENV
@@ -23,10 +30,12 @@ runs:
     # .nimble file so that Nim thinks the files are root level
     - name: "Create dummy nimble file"
       shell: bash
+      working-directory: ${{ inputs.src-dir }}
       run: touch "$nimble_srcDir/dummy.nimble"
 
     - name: "Run doc generation"
       shell: bash
+      working-directory: ${{ inputs.src-dir }}
       run: nimble doc --project --outdir=${{ inputs.out-dir }} ${{ inputs.main-file }}
 
 

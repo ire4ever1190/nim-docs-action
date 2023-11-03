@@ -1,0 +1,22 @@
+name: test
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup nim"
+        uses: jiro4989/setup-nim-action@v1
+
+      - name: "Build documentation"
+        uses: "./"
+        with:
+          src-dir: "testProject/"
