@@ -24,7 +24,7 @@ runs:
       working-directory: ${{ inputs.src-dir }}
       run: |
         # Convert all the variables to be `nimble_` prefixed variables
-        nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\"\\2\"/" >> $GITHUB_ENV
+        nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\\2/" >> $GITHUB_ENV
 
     # To remove the src/ prefix in the pages we add a dummy
     # .nimble file so that Nim thinks the files are root level
