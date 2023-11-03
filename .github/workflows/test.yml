@@ -19,4 +19,5 @@ jobs:
       - name: "Build documentation"
         uses: "./"
         with:
-          src-dir: "testProject/"
+          project-dir: "testProject/"
+          main-file: "src/testProject.nim"

@@ -2,7 +2,7 @@ name: "Nim documentation generator"
 description: "Automatically builds documentation with a few extra niceties that I like"
 inputs:
   main-file:
-    description: "Main Nim file which to build documentation with (relative to root of repo)"
+    description: "Main Nim file which to build documentation with (relative to root of `project-dir`)"
     required: true
 
   out-dir:
@@ -10,7 +10,7 @@ inputs:
     required: true
     default: "site/"
 
-  src-dir:
+  project-dir:
     description: "Folder containing the .nimble file"
     required: true
     default: "./"
@@ -21,7 +21,7 @@ runs:
     # Convert all the nimble variables into ENV variables for easy access
     - name: "Convert nimble files to ENV variables"
       shell: bash
-      working-directory: ${{ inputs.src-dir }}
+      working-directory: ${{ inputs.project-dir }}
       run: |
         # Convert all the variables to be `nimble_` prefixed variables
         nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\\2/" >> $GITHUB_ENV
@@ -30,12 +30,12 @@ runs:
     # .nimble file so that Nim thinks the files are root level
     - name: "Create dummy nimble file"
       shell: bash
-      working-directory: ${{ inputs.src-dir }}
+      working-directory: ${{ inputs.project-dir }}
       run: touch "$nimble_srcDir/dummy.nimble"
 
     - name: "Run doc generation"
       shell: bash
-      working-directory: ${{ inputs.src-dir }}
+      working-directory: ${{ inputs.project-dir }}
       run: nimble doc --project --outdir=${{ inputs.out-dir }} ${{ inputs.main-file }}
 
 
