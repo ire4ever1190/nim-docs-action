@@ -32,10 +32,28 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       run: touch "$nimble_srcDir/dummy.nimble"
 
+    - name: "Just a lil test"
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: >
+        nim r test.nim 
+        --project
+        --outdir="${{ inputs.out-dir }}"
+        --index:on
+        --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+        --git.commit:"$GITHUB_SHA" 
+        ${{ inputs.main-file }}
+
     - name: "Run doc generation"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
       run: >
-        nimble doc  --project --outdir=${{ inputs.out-dir }} --index:on --git.url:$GITHUB_SERVER_URL/$GITHUB_REPOSITORY --git.commit:$GITHUB_SHA ${{ inputs.main-file }}
+        nimble doc 
+        --project
+        --outdir="${{ inputs.out-dir }}"
+        --index:on
+        --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+        --git.commit:"$GITHUB_SHA" 
+        ${{ inputs.main-file }}
 
 
