@@ -98,9 +98,8 @@ runs:
     - name: "Create artefact"
       if: ${{ inputs.deploy == 'pages' }}
       uses: actions/upload-pages-artifact@v1
-      working-directory: ${{ inputs.project-dir }}
       with:
-        path: ${{ inputs.out-dir }}
+        path: ${{ inputs.project-dir }}/${{ inputs.out-dir }}
 
     - name: "Deploy to pages"
       if: ${{ inputs.deploy == 'pages' }}
