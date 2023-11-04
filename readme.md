@@ -6,6 +6,7 @@ separately.
 - [x] Sets commit information for docs
 - [x] Checksout the tag so you are building for the latest release (Instead of just the latest development changes)
 - [x] Builds indexes first to support `importdoc`
+- [x] Can deploy files to Github pages
 - [ ] TODO: Build both devel/stable docs
 
 ## Setup
