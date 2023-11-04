@@ -69,7 +69,7 @@ runs:
         nimble doc 
         --project
         --outdir="${{ inputs.out-dir }}"
-        --docCmd:skip # Save running examples twice
+        --docCmd:skip
         --index:only
         ${{ inputs.main-file }}
 
