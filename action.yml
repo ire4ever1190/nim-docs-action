@@ -49,11 +49,12 @@ runs:
 
     - name: "Try to checkout branch that matches version"
       shell: bash
-      continue-on-error: true
       working-directory: ${{ inputs.project-dir }}
       run: |
         git fetch --tags
-        found_ver=$(git tag -l | grep -E -m 1 "v?$nimble_version")
+        # We need to hide grep errors when it doesn't match
+        # https://stackoverflow.com/a/49627999/21247938
+        found_ver=$(git tag -l | { grep -E -m 1 "v?$nimble_version" || test $? = 1; })
         if [ ! -z "$found_ver" ]
         then
           git checkout "$found_ver"
