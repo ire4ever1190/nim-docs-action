@@ -53,12 +53,14 @@ runs:
 
     - name: "Try to checkout branch that matches version"
       shell: bash
+      id: get-version
       working-directory: ${{ inputs.project-dir }}
       run: |
         git fetch --tags
         # We need to hide grep errors when it doesn't match
         # https://stackoverflow.com/a/49627999/21247938
         found_ver=$(git tag -l | { grep -E -m 1 "v?$nimble_version" || test $? = 1; })
+        echo "pkg_ver=$found_ver" >> $GITHUB_OUTPUT
         if [ ! -z "$found_ver" ]
         then
           git checkout "$found_ver"
@@ -87,7 +89,7 @@ runs:
         --outdir="${{ inputs.out-dir }}"
         --index:on
         --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
-        --git.commit:"$GITHUB_SHA" 
+        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}" 
         ${{ inputs.main-file }}
 
     # Adds a few extra KB overhead to store theindex.html twice, but
