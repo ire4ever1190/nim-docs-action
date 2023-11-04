@@ -71,7 +71,7 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       if: ${{ inputs.build-index == 'true' }}
       run: >
-        nimble doc 
+        nimble -y doc 
         --project
         --outdir="${{ inputs.out-dir }}"
         --docCmd:skip
@@ -82,7 +82,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.project-dir }}
       run: >
-        nimble doc 
+        nimble -y doc 
         --project
         --outdir="${{ inputs.out-dir }}"
         --index:on

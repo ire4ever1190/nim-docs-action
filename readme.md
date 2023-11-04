@@ -20,10 +20,32 @@ Add this line into your build step somewhere
           main-file: src/foo.nim # Replace with your main file
 ```
 
-Full example to auto deploy to github
+Full example to auto deploy to Github pages
 
 ```yml
-# TODO
+on:
+  push:
+    branches:
+      - master # Replace this with your main branch
+  workflow_dispatch: # Enable manually rebuilding docs
+
+jobs:
+  deploy:
+    permissions:
+      pages: write # To deploy to Pages
+      id-token: write # Verify deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup nim"
+        uses: jiro4989/setup-nim-action@v1
+
+      - name: "Build documentation"
+        uses: ire4ever1190/nim-docs-action@v1
+        with:
+          main-file: "src/pantry.nim"
+          deploy: "pages"
 ```
 
 ### Config
