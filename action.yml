@@ -6,7 +6,7 @@ inputs:
     required: true
 
   out-dir:
-    description: "Where to put the files (Relative to `project-dir`"
+    description: "Where to put the files (Relative to `project-dir`)"
     required: true
     default: "site/"
 
@@ -14,6 +14,21 @@ inputs:
     description: "Folder containing the .nimble file"
     required: true
     default: "./"
+
+  build-index:
+    description: "Whether to build indexes first or not (Can be disabled if you don't use importdoc)"
+    required: true
+    default: 'true' # We don't get booleans?
+
+  deploy:
+    description: "Automatically deploy the site. Currently only supports Github pages"
+    required: false
+    default: "none"
+
+outputs:
+  site-dir:
+    description: "Path to built documentation"
+    value: ${{ inputs.project-dir }}/${{ inputs.out-dir }}
 
 runs:
   using: composite
@@ -44,6 +59,19 @@ runs:
           git checkout "$found_ver"
         fi
 
+    # To support `importdoc` we need to first build the
+    # indexes
+    - name: "Build index"
+      shell: bash
+      working-directory: ${{ inputs.project-dir }}
+      if: ${{ inputs.build-index == "true" }}
+      run: >
+        nimble doc 
+        --project
+        --outdir="${{ inputs.out-dir }}"
+        --docCmd:skip # Save running examples twice
+        --index:only
+
     - name: "Run doc generation"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
@@ -56,4 +84,24 @@ runs:
         --git.commit:"$GITHUB_SHA" 
         ${{ inputs.main-file }}
 
+    # Adds a few extra KB overhead to store theindex.html twice, but
+    # means there are no redirects or anything like that
+    - name: "Copy index"
+      shell: bash
+      working-directory: ${{ inputs.project-dir }}
+      run: cp "${{ inputs.out-dir }}/theindex.html" "${{ inputs.out-dir }}/index.html"
 
+    #
+    # Github pages deployment
+    #
+
+    - name: "Create artefact"
+      if: ${{ inputs.deploy == "pages" }}
+      uses: actions/upload-pages-artifact@v1
+      working-directory: ${{ inputs.project-dir }}
+      with:
+        path: ${{ inputs.out-dir }}
+
+    - name: "Deploy to pages"
+      if: ${{ inputs.deploy == "pages" }}
+      uses: actions/deploy-pages@v1
