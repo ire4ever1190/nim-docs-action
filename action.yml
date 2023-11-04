@@ -1,5 +1,9 @@
 name: "Nim documentation generator"
 description: "Automatically builds documentation with a few extra niceties that I like"
+author: "Jake Leahy"
+branding:
+  icon: book
+  color: yellow
 inputs:
   main-file:
     description: "Main Nim file which to build documentation with (relative to root of `project-dir`)"
