@@ -71,6 +71,7 @@ runs:
         --outdir="${{ inputs.out-dir }}"
         --docCmd:skip # Save running examples twice
         --index:only
+        ${{ inputs.main-file }}
 
     - name: "Run doc generation"
       shell: bash
