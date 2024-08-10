@@ -29,6 +29,11 @@ inputs:
     required: false
     default: "none"
 
+  devel-branch:
+    description: "Development branch to link to in the `edit` button. Defaults to the default branch in git"
+    required: false
+    default: ""
+
 outputs:
   site-dir:
     description: "Path to built documentation"
@@ -65,7 +70,14 @@ runs:
         then
           git checkout "$found_ver"
         fi
-
+    - name: "Set the development branch"
+      shell: bash
+      id: devel-branch
+      working-directory: ${{ inputs.project-dir }}
+      run: |
+        git_default = git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+        echo "branch=${{ inputs.myInput || '$git_default' }}" >> $GITHUB_OUTPUT
+        
     # To support `importdoc` we need to first build the
     # indexes
     - name: "Build index"
@@ -89,7 +101,8 @@ runs:
         --outdir="${{ inputs.out-dir }}"
         --index:on
         --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
-        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}" 
+        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}"
+        --git.devel:"${{ inputs.devel-branch || steps.devel-branch.outputs.branch }}"
         ${{ inputs.main-file }}
 
     # Adds a few extra KB overhead to store theindex.html twice, but
