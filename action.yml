@@ -75,9 +75,9 @@ runs:
       id: devel-branch
       working-directory: ${{ inputs.project-dir }}
       run: |
-        git_default = git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+        git_default=git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
         echo "branch=${{ inputs.myInput || '$git_default' }}" >> $GITHUB_OUTPUT
-        
+
     # To support `importdoc` we need to first build the
     # indexes
     - name: "Build index"
