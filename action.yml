@@ -29,6 +29,11 @@ inputs:
     required: false
     default: "none"
 
+  devel-branch:
+    description: "Development branch to link to in the `edit` button. Defaults to the default branch in git"
+    required: false
+    default: ""
+
 outputs:
   site-dir:
     description: "Path to built documentation"
@@ -89,7 +94,8 @@ runs:
         --outdir="${{ inputs.out-dir }}"
         --index:on
         --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
-        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}" 
+        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}"
+        --git.devel:"${{ inputs.devel-branch || github.event.repository.default_branch }}"
         ${{ inputs.main-file }}
 
     # Adds a few extra KB overhead to store theindex.html twice, but
