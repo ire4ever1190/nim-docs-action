@@ -21,4 +21,3 @@ jobs:
         with:
           project-dir: "testProject/"
           main-file: "src/testProject.nim"
-          devel-branch: "test"
