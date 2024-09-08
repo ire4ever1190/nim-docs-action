@@ -61,6 +61,7 @@ Only `main-file` is required. Everything else is optional
 - `project-dir`: Folder containing the .nimble file. Used as working directory for operations
 - `build-index`: Whether to build index before building documentation. This is only to support [referencing external symbols](https://nim-lang.org/docs/markdown_rst.html#referencing-markup-external-referencing). If you don't use that then you can turn this off (theindex.html will be built either way)
 - `deploy`: Automatically deploy the documentation. Currently only supports 'pages'
+- `extra-files`: List of files (markdown/Nim) that are not code modules but documents
 
 #### Outputs
 
