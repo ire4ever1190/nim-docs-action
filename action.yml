@@ -34,6 +34,11 @@ inputs:
     required: false
     default: ""
 
+  extra-files:
+    description: "Extra documentation files to render. Can either be markdown or Nim files"
+    required: false
+    default: ""
+
 outputs:
   site-dir:
     description: "Path to built documentation"
@@ -78,18 +83,51 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       if: ${{ inputs.build-index == 'true' }}
       run: >
-        nimble -y doc 
+        nimble -y doc
         --project
         --outdir="${{ inputs.out-dir }}"
         --docCmd:skip
         --index:only
         ${{ inputs.main-file }}
 
+    - name: "Generate extra files"
+      shell: bash
+      working-directory: ${{ inputs.project-dir }}
+      run: |
+        # Go through each file and generate it
+        for file in $(ls ${{ inputs. extra-files }});
+        do
+          # Change command depending on what the file is
+          # TODO: Support RST
+          case "$file"
+            "*.md")
+              newFile=${file/%md/html}
+              cmd=nim md2html ;;
+            "*.nim")
+              newFile=${file/%nim/html}
+              cmd=nimble -y doc ;;
+            *)
+              echo "Don't know how to render this file..."
+              exit 1;;
+          esac
+          indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
+          # Build the file
+          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on
+
+
+          # We need to perform a few patches to the index file.
+          # - Make the title be markupTitle so it gets rendered as a document in theindex.html
+          # - Fix the file path so it goes into the right subfolder
+          sed -E -i $indexFile \
+            -e "s/nimTitle/markupTitle/" \
+            -e "(\S+\s)\S+/$1{newFile}/"
+        done
+
     - name: "Run doc generation"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
       run: >
-        nimble -y doc 
+        nimble -y doc
         --project
         --outdir="${{ inputs.out-dir }}"
         --index:on
