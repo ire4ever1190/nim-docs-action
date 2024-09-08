@@ -99,7 +99,7 @@ runs:
         do
           # Change command depending on what the file is
           # TODO: Support RST
-          case "$file"
+          case "$file" in
             "*.md")
               newFile=${file/%md/html}
               cmd=nim md2html ;;
@@ -120,7 +120,7 @@ runs:
           # - Fix the file path so it goes into the right subfolder
           sed -E -i $indexFile \
             -e "s/nimTitle/markupTitle/" \
-            -e "(\S+\s)\S+/$1{newFile}/"
+            -e "^(\S+\s)\S+/$1{newFile}/g"
         done
 
     - name: "Run doc generation"
