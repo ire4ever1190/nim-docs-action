@@ -103,10 +103,10 @@ runs:
           case "$file" in
             *.md)
               newFile=${file/%md/html}
-              cmd=nim md2html ;;
+              cmd="nim md2html" ;;
             *.nim)
               newFile=${file/%nim/html}
-              cmd=nimble -y doc ;;
+              cmd="nimble -y doc" ;;
             *)
               echo "Whats ${file}?"
               echo "I don't know how to render this file..."
