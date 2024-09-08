@@ -101,10 +101,10 @@ runs:
           # Change command depending on what the file is
           # TODO: Support RST
           case "$file" in
-            "*.md")
+            *.md)
               newFile=${file/%md/html}
               cmd=nim md2html ;;
-            "*.nim")
+            *.nim)
               newFile=${file/%nim/html}
               cmd=nimble -y doc ;;
             *)
