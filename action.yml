@@ -114,7 +114,8 @@ runs:
           esac
           indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
           # Build the file
-          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on
+          # TODO: PR for missing file, nim just gives random error about opening .txt
+          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on $file
 
 
           # We need to perform a few patches to the index file.
