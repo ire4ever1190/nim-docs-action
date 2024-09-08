@@ -123,7 +123,7 @@ runs:
           # - Fix the file path so it goes into the right subfolder
           sed -E -i $indexFile \
             -e "s/nimTitle/markupTitle/" \
-            -E -e "^(\S+\s+)\S+/$1{newFile}/g"
+            -e "s/^(\S+\s+)\S+/$1{newFile}/g"
         done
 
     - name: "Run doc generation"
