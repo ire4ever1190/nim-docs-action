@@ -21,6 +21,7 @@ jobs:
         with:
           project-dir: "testProject/"
           main-file: "src/testProject.nim"
+          extra-files: "docs/*.md examples/*.nim"
 
       - name: "Zip site"
         run: zip -r site.zip testProject/site/*
