@@ -117,13 +117,13 @@ runs:
           # TODO: PR for missing file, nim just gives random error about opening .txt
           $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on $file
 
-
+          origFile=$(basename $newFile)
           # We need to perform a few patches to the index file.
           # - Make the title be markupTitle so it gets rendered as a document in theindex.html
           # - Fix the file path so it goes into the right subfolder
           sed -E -i $indexFile \
             -e "s/nimTitle/markupTitle/" \
-            -e "s@^(\S+\s+)\S+@\1${newFile}@g"
+            -e "s@${origFile}@${newFile}@g"
         done
 
     - name: "Run doc generation"
