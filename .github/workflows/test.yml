@@ -23,7 +23,7 @@ jobs:
           main-file: "src/testProject.nim"
 
       - name: "Zip site"
-        run: zip -r site.zip tettProject/site/*
+        run: zip -r site.zip testProject/site/*
 
       - name: "Upload site"
         uses: actions/upload-artifact@v4
