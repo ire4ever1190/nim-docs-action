@@ -107,7 +107,8 @@ runs:
               newFile=${file/%nim/html}
               cmd=nimble -y doc ;;
             *)
-              echo "Don't know how to render this file..."
+              echo "Whats ${file}?"
+              echo "I don't know how to render this file..."
               exit 1;;
           esac
           indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
