@@ -93,6 +93,7 @@ runs:
     - name: "Generate extra files"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
+      if: ${{ inputs.extra-files != '' }}
       run: |
         # Go through each file and generate it
         for file in $(ls ${{ inputs. extra-files }});
