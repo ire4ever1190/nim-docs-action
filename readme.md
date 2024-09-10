@@ -65,3 +65,7 @@ Only `main-file` is required. Everything else is optional
 #### Outputs
 
 - `site-dir`: Path to directory containing the built documentation
+
+#### Nim
+
+`-d:docgen` is passed when compiling files so you can use that within your config files to conditionally enable docgen flags
