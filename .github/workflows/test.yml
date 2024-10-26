@@ -31,7 +31,7 @@ jobs:
         run: npm install -g surge
 
       - name: "Deploy example"
-        uses: koj-co/deploy-pr-action@v1.0.1
+        uses: AnandChowdhary/deploy-pr-action@v1.6.0
         with:
           prefix: nim-docs-actions
           distDir: testProject/site
