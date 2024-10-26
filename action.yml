@@ -118,15 +118,13 @@ runs:
           indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
           # Build the file
           # TODO: PR for missing file, nim just gives random error about opening .txt
-          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
+          $cmd --docroot:"${{ inputs.project-dir}}" --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
 
           origFile=$(basename $newFile)
           # We need to perform a few patches to the index file.
           # - Make the title be markupTitle so it gets rendered as a document in theindex.html
-          # - Fix the file path so it goes into the right subfolder
           sed -E -i $indexFile \
-            -e "s/nimTitle/markupTitle/" \
-            -e "s@${origFile}@${newFile}@g"
+            -e "s/nimTitle/markupTitle/"
         done
 
     - name: "Run doc generation"
