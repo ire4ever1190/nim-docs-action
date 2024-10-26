@@ -119,7 +119,7 @@ runs:
           # Build the file
           # TODO: PR for missing file, nim just gives random error about opening .txt
           echo "Documenting ${file}..."
-          $cmd --docroot:"$(pwd)" --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
+          $cmd --docroot:"$(pwd)" --outdir="${{ inputs.out-dir }}" --index:on -d:docgen $file
 
           # Make the title be markupTitle so it gets rendered as a document in theindex.html
           find
