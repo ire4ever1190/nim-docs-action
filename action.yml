@@ -122,7 +122,6 @@ runs:
           $cmd --docroot:"$(pwd)" --outdir="${{ inputs.out-dir }}" --index:on -d:docgen $file
 
           # Make the title be markupTitle so it gets rendered as a document in theindex.html
-          find
           sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
         done
 
