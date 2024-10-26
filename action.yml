@@ -88,6 +88,8 @@ runs:
         --outdir="${{ inputs.out-dir }}"
         --docCmd:skip
         --index:only
+        --warningAsError:BrokenLink:on
+        --warningAsError:AmbiguousLink:on
         -d:docgen
         ${{ inputs.main-file }}
 
