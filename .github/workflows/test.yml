@@ -22,6 +22,14 @@ jobs:
           main-file: "src/testProject.nim"
           extra-files: "docs/*.md examples/*.nim"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: "Install surge"
+        run: npm install -g surge
+
       - name: "Deploy example"
         uses: koj-co/deploy-pr-action@v1.0.1
         with:
