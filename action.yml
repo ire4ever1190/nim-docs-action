@@ -118,7 +118,7 @@ runs:
           indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
           # Build the file
           # TODO: PR for missing file, nim just gives random error about opening .txt
-          rootDir=$(basename "${{ inputs.project-dir }}")
+          rootDir=$(readlink -e "${{ inputs.project-dir }}")
           $cmd --docroot:"${rootDir}" --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
 
           origFile=$(basename $newFile)
