@@ -90,6 +90,7 @@ runs:
         --index:only
         --warningAsError:BrokenLink:on
         --warningAsError:AmbiguousLink:on
+        -d:docgen
         ${{ inputs.main-file }}
 
     - name: "Generate extra files"
@@ -117,7 +118,7 @@ runs:
           indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
           # Build the file
           # TODO: PR for missing file, nim just gives random error about opening .txt
-          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on $file
+          $cmd --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
 
           origFile=$(basename $newFile)
           # We need to perform a few patches to the index file.
@@ -139,6 +140,7 @@ runs:
         --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
         --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}"
         --git.devel:"${{ inputs.devel-branch || github.event.repository.default_branch }}"
+        -d:docgen
         ${{ inputs.main-file }}
 
     # Adds a few extra KB overhead to store theindex.html twice, but
