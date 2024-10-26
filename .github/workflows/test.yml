@@ -1,8 +1,12 @@
 name: "Test action"
 
 on:
-  workflow_dispatch:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
   push:
 
 jobs:
@@ -23,11 +27,7 @@ jobs:
           main-file: "src/testProject.nim"
           extra-files: "docs/*.md examples/*.nim"
 
-      - name: "Zip site"
-        run: zip -r site.zip testProject/site/*
-
-      - name: "Upload site"
-        uses: actions/upload-artifact@v4
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
         with:
-          name: site
-          path: site.zip
+          source-dir: testProject/site
