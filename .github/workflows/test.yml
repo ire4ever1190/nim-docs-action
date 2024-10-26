@@ -2,6 +2,11 @@ name: "Test action"
 
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
   push:
 
 jobs:
@@ -22,21 +27,7 @@ jobs:
           main-file: "src/testProject.nim"
           extra-files: "docs/*.md examples/*.nim"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
         with:
-          node-version: 12
-
-      - name: "Install surge"
-        run: npm install -g surge
-
-      - name: "Deploy example"
-        uses: AnandChowdhary/deploy-pr-action@v1.6.0
-        with:
-          prefix: nim-docs-actions
-          distDir: testProject/site
-          skipLabels: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub token
-          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }} # Surge.sh email
-          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }} # Surge.sh token
+          source-dir: testProject/site
