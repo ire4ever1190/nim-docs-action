@@ -121,11 +121,8 @@ runs:
           rootDir=$(readlink -e "${{ inputs.project-dir }}")
           $cmd --docroot:"${rootDir}" --out="${{ inputs.out-dir }}/${newFile}" --index:on -d:docgen $file
 
-          origFile=$(basename $newFile)
-          # We need to perform a few patches to the index file.
-          # - Make the title be markupTitle so it gets rendered as a document in theindex.html
-          sed -E -i $indexFile \
-            -e "s/nimTitle/markupTitle/"
+          # Make the title be markupTitle so it gets rendered as a document in theindex.html
+          sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
         done
 
     - name: "Run doc generation"
