@@ -152,7 +152,7 @@ runs:
 
     - name: "Create artefact"
       if: ${{ inputs.deploy == 'pages' }}
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v4
       with:
         path: ${{ inputs.project-dir }}/${{ inputs.out-dir }}
 
