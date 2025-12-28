@@ -25,10 +25,12 @@ case "$1" in
     then
         git checkout "$found_ver"
     fi
+    commit=$found_ver
     echo "Generating for $found_ver" ;;
   HEAD)
     newFile=${file/%nim/html}
     found_ver="develop"
+    commit=$(git rev-parse HEAD)
     echo "Generating for latest commit" ;;
   *)
     echo "Unknown version: $1"
@@ -58,7 +60,7 @@ if [[ $5 == "true" ]]; then
 fi
 
 # Go through each file and generate it
-for file in $(ls ${{ inputs. extra-files }});
+for file in $(ls $6);
 do
   # Change command depending on what the file is
   # TODO: Support RST
@@ -86,10 +88,10 @@ done
 # Now build the documentation
 nimble -y doc \
     --project \
-    --outdir="${{ inputs.out-dir }}" \
+    --outdir="${output_dir}" \
     --index:on \
     --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-    --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}" \
-    --git.devel:"${{ inputs.devel-branch || github.event.repository.default_branch }}" \
+    --git.commit:"${commit}" \
+    --git.devel:"${4:-$GITHUB_REF_NAME}" \
     -d:docgen \
     $3
