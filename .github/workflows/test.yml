@@ -9,6 +9,9 @@ on:
       - closed
   push:
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
