@@ -22,7 +22,7 @@ inputs:
   build-index:
     description: "Whether to build indexes first or not (Can be disabled if you don't use importdoc)"
     required: true
-    default: 'true' # We don't get booleans?
+    default: "true" # We don't get booleans?
 
   deploy:
     description: "Automatically deploy the site. Currently only supports Github pages"
@@ -39,6 +39,11 @@ inputs:
     required: false
     default: ""
 
+  versions:
+    description: "Space separated list of versions to build documentation for. `HEAD` builds latest commit and `stable` builds latest published version"
+    required: false
+    default: stable
+
 outputs:
   site-dir:
     description: "Path to built documentation"
@@ -47,104 +52,29 @@ outputs:
 runs:
   using: composite
   steps:
-    # Convert all the nimble variables into ENV variables for easy access
-    - name: "Convert nimble files to ENV variables"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      run: |
-        nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\\2/" >> $GITHUB_ENV
-
-    # To remove the src/ prefix in the pages we add a dummy
-    # .nimble file so that Nim thinks the files are root level
-    - name: "Create dummy nimble file"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      run: touch "$nimble_srcDir/dummy.nimble"
-
-    - name: "Try to checkout branch that matches version"
-      shell: bash
-      id: get-version
-      working-directory: ${{ inputs.project-dir }}
-      run: |
-        git fetch --tags
-        # We need to hide grep errors when it doesn't match
-        # https://stackoverflow.com/a/49627999/21247938
-        found_ver=$(git tag -l | { grep -E -m 1 "v?$nimble_version" || test $? = 1; })
-        echo "pkg_ver=$found_ver" >> $GITHUB_OUTPUT
-        if [ ! -z "$found_ver" ]
-        then
-          git checkout "$found_ver"
-        fi
-
-    # To support `importdoc` we need to first build the
-    # indexes
-    - name: "Build index"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      if: ${{ inputs.build-index == 'true' }}
-      run: >
-        nimble -y doc
-        --project
-        --outdir="${{ inputs.out-dir }}"
-        --docCmd:skip
-        --index:only
-        --warningAsError:BrokenLink:on
-        --warningAsError:AmbiguousLink:on
-        -d:docgen
-        ${{ inputs.main-file }}
-
-    - name: "Generate extra files"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      if: ${{ inputs.extra-files != '' }}
-      run: |
-        # Go through each file and generate it
-        for file in $(ls ${{ inputs. extra-files }});
-        do
-          # Change command depending on what the file is
-          # TODO: Support RST
-          case "$file" in
-            *.md)
-              newFile=${file/%md/html}
-              cmd="nim md2html" ;;
-            *.nim)
-              newFile=${file/%nim/html}
-              cmd="nimble -y doc" ;;
-            *)
-              echo "Whats ${file}?"
-              echo "I don't know how to render this file..."
-              exit 1;;
-          esac
-          indexFile="${{ inputs.out-dir }}/${newFile/%html/idx}"
-          # Build the file
-          # TODO: PR for missing file, nim just gives random error about opening .txt
-          echo "Documenting ${file}..."
-          $cmd --docroot:"$(pwd)" --outdir="${{ inputs.out-dir }}" --index:on -d:docgen $file
-
-          # Make the title be markupTitle so it gets rendered as a document in theindex.html
-          sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
-        done
-
     - name: "Run doc generation"
       shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      run: >
-        nimble -y doc
-        --project
-        --outdir="${{ inputs.out-dir }}"
-        --index:on
-        --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
-        --git.commit:"${{ steps.get-version.outputs.pkg_ver || github.sha }}"
-        --git.devel:"${{ inputs.devel-branch || github.event.repository.default_branch }}"
-        -d:docgen
-        ${{ inputs.main-file }}
+      run: |
+        set -e
+        for version in ${{ inputs.versions }}; do
+          ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "$version" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
+          source <(cd ${{ inputs.project-dir }} && $GITHUB_ACTION_PATH/scripts/nimbleVar.sh)
+          case "${version}" in
+            stable)
+              echo " - [${nimble_version} (latest)](stable)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
+            HEAD)
+              echo " - [Latest commit](develop)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
+            *)
+              echo " - [$version]($version)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
+          esac
+        done
 
-    # Adds a few extra KB overhead to store theindex.html twice, but
-    # means there are no redirects or anything like that
-    - name: "Copy index"
+    - name: "Generate index for all the versions"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
-      run: cp "${{ inputs.out-dir }}/theindex.html" "${{ inputs.out-dir }}/index.html"
+      run: |
+        cat ${GITHUB_ACTION_PATH}/versions.md
+        nim md2html --out:"${{ inputs.out-dir }}/index.html" ${GITHUB_ACTION_PATH}/versions.md
 
     #
     # Github pages deployment

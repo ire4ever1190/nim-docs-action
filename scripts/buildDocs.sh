@@ -1,0 +1,111 @@
+#!/bin/bash
+#
+# This script checks out a version and builds all the documentation for it
+# Args:
+#  - $1: Version that corresponds to a git reference that should be built
+#  - $2: Folder containing the .nimble file
+#  - $3: Main .nim file to use as entrypoint for documentation
+#  - $4: Which branch to link users too if they want to edit something
+#  - $5: Whether to build an indexs first (needed for importdoc)
+#  - $6: Space separated list of extra files to generate docs for
+#  - $7: Base folder to output to
+
+set -e
+
+cd $2
+
+# Make sure we are on the latest commit so we know what the last set version is
+git checkout $(git rev-parse --abbrev-ref origin/HEAD | sed 's#^origin/##')
+source <($( dirname "${BASH_SOURCE[0]}" )/nimbleVar.sh)
+
+# If its stable, just
+selected_version=$1
+# what URL to store it under
+version_name=$1
+if [[ $1 == "stable" ]]; then
+    version_name="stable"
+    selected_version=$nimble_version
+fi
+
+case "$1" in
+  HEAD)
+    newFile=${file/%nim/html}
+    version_name="develop"
+    commit=$(git rev-parse HEAD)
+    echo "Generating for latest commit" ;;
+  *)
+    # Find a tag that matches the version specified in the nimble file
+    git fetch --tags
+    # We need to hide grep errors when it doesn't match
+    # https://stackoverflow.com/a/49627999/21247938
+    found_ver=$(git tag -l | { grep -E -m 1 "v?$nimble_version" || test $? = 1; })
+    if [ ! -z "$found_ver" ]
+    then
+        git checkout "$found_ver"
+    fi
+    commit=$found_ver
+    echo "Generating for $found_ver" ;;
+esac
+
+output_dir="$7/${version_name}"
+
+git checkout $commit
+
+# To remove the src/ prefix in the pages we add a dummy
+# .nimble file so that Nim thinks the files are root level
+touch "$nimble_srcDir/dummy.nimble"
+
+# To support `importdoc` we need to first build the
+# indexes
+if [[ $5 == "true" ]]; then
+    nimble -y doc \
+        --project \
+        --outdir=${output_dir} \
+        --docCmd:skip \
+        --index:only \
+        --warningAsError:BrokenLink:on \
+        --warningAsError:AmbiguousLink:on \
+        -d:docgen \
+        $3
+fi
+
+# Go through each file and generate it
+for file in $(ls $6);
+do
+  # Change command depending on what the file is
+  # TODO: Support RST
+  case "$file" in
+    *.md)
+      newFile=${file/%md/html}
+      cmd="nim md2html" ;;
+    *.nim)
+      newFile=${file/%nim/html}
+      cmd="nimble -y doc" ;;
+    *)
+      echo "Whats ${file}?"
+      echo "I don't know how to render this file..."
+      exit 1;;
+  esac
+  indexFile="${output_dir}/${newFile/%html/idx}"
+  # Build the file
+  echo "Documenting ${file}..."
+  $cmd --docroot:"$(pwd)" --outdir="${output_dir}" --index:on -d:docgen $file
+
+  # Make the title be markupTitle so it gets rendered as a document in theindex.html
+  sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
+done
+
+# Now build the documentation
+nimble -y doc \
+    --project \
+    --outdir="${output_dir}" \
+    --index:on \
+    --git.url:"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+    --git.commit:"${commit}" \
+    --git.devel:"${4:-$GITHUB_REF_NAME}" \
+    -d:docgen \
+    $3
+
+# We don't want the user to specify they want to go to the index, and we don't want to deal with redirects
+# File is small, who cares if we duplicate it
+cp "${output_dir}/theindex.html" "${output_dir}/index.html"
