@@ -28,6 +28,9 @@ jobs:
         run: |
           cd testProject
           git init
+
+          git add .
+          git commit -m "Initial commit"
           git tag 0.1.0 # Initial tag
 
           sed -i 's/0.1.0/0.2.0/' testProject.nimble
