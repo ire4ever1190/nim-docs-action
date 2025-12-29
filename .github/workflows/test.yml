@@ -30,6 +30,7 @@ jobs:
           project-dir: "testProject/"
           main-file: "src/testProject.nim"
           extra-files: "docs/*.md examples/*.nim"
+          versions: HEAD
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1

@@ -39,6 +39,11 @@ inputs:
     required: false
     default: ""
 
+  versions:
+    description: "Space separated list of versions to build documentation for. `HEAD` builds latest commit and `stable` builds latest published version"
+    required: false
+    default: stable
+
 outputs:
   site-dir:
     description: "Path to built documentation"
@@ -52,15 +57,14 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       run: nim md2html --out:"${{ inputs.out-dir }}/index.html" ${GITHUB_ACTION_PATH}/versions.md
 
-    - name: "Run doc generation for latest"
+    - name: "Run doc generation"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
-      run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "HEAD" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
-
-    - name: "Run doc generation for stable"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "stable" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
+      run: |
+        set -e
+        for version in ${{ inputs.versions }}; do
+          ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "$version" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
+        done
 
     #
     # Github pages deployment
