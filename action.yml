@@ -52,6 +52,11 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "HEAD" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
 
+    - name: "Generate index for all the versions"
+      shell: bash
+      working-directory: ${{ inputs.project-dir }}
+      run: nim md2html ${GITHUB_ACTION_PATH}/versions.md --out:"${{ inputs.out-dir }}/index.html"
+
     #
     # Github pages deployment
     #
