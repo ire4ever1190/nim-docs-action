@@ -61,18 +61,20 @@ runs:
           source <($(cd ${{ inputs.project-dir }} && $GITHUB_ACTION_PATH/scripts/nimbleVar.sh))
           case "${version}" in
             stable)
-              echo " - [${nimble_version} (latest)](stable)" >> versions.md ;;
+              echo " - [${nimble_version} (latest)](stable)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
             HEAD)
-              echo " - [Latest commit](develop)" >> versions.md ;;
+              echo " - [Latest commit](develop)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
             *)
-              echo " - [$version]($version)" >> versions.md ;;
+              echo " - [$version]($version)" >> ${GITHUB_ACTION_PATH}/versions.md ;;
           esac
         done
 
     - name: "Generate index for all the versions"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
-      run: nim md2html --out:"${{ inputs.out-dir }}/index.html" ${GITHUB_ACTION_PATH}/versions.md
+      run: |
+        cat ${GITHUB_ACTION_PATH}/versions.md
+        nim md2html --out:"${{ inputs.out-dir }}/index.html" ${GITHUB_ACTION_PATH}/versions.md
 
     #
     # Github pages deployment
