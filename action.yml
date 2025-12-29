@@ -59,7 +59,7 @@ runs:
         for version in ${{ inputs.versions }}; do
           ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "$version" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
           source <($($GITHUB_ACTION_PATH/scripts/nimbleVar.sh))
-          case "$1" in
+          case "$version" in
             stable)
               echo " - [$nimble_version (latest)](stable)" >> versions.md ;;
             HEAD)
