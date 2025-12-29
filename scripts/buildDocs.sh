@@ -12,12 +12,25 @@
 
 set -e
 
-# Until we need to do all the versions, we can safely source here
 cd $2
+
+# Make sure we are on the latest commit so we know what the last set version is
+git checkout (git rev-parse --abbrev-ref origin/HEAD | sed 's#^origin/##')
 source <($( dirname "${BASH_SOURCE[0]}" )/nimbleVar.sh)
 
+# If its stable, just
+selected_version=$1
+if [[ $1 == "stable" ]]; then
+    selected_version=$nimble_version
+fi
+
 case "$1" in
-  stable)
+  HEAD)
+    newFile=${file/%nim/html}
+    found_ver="develop"
+    commit=$(git rev-parse HEAD)
+    echo "Generating for latest commit" ;;
+  *)
     # Find a tag that matches the version specified in the nimble file
     git fetch --tags
     # We need to hide grep errors when it doesn't match
@@ -29,14 +42,6 @@ case "$1" in
     fi
     commit=$found_ver
     echo "Generating for $found_ver" ;;
-  HEAD)
-    newFile=${file/%nim/html}
-    found_ver="develop"
-    commit=$(git rev-parse HEAD)
-    echo "Generating for latest commit" ;;
-  *)
-    echo "Unknown version: $1"
-    exit 1;;
 esac
 
 output_dir="$7/${found_ver}"
