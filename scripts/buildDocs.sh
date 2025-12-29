@@ -41,7 +41,7 @@ esac
 
 output_dir="$7/${found_ver}"
 
-git checkout $1
+git checkout $commit
 
 # To remove the src/ prefix in the pages we add a dummy
 # .nimble file so that Nim thinks the files are root level
