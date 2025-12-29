@@ -10,6 +10,8 @@
 #  - $6: Space separated list of extra files to generate docs for
 #  - $7: Base folder to output to
 
+set -e
+
 # Until we need to do all the versions, we can safely source here
 cd $2
 source nimbleVar.sh
