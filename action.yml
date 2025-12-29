@@ -58,7 +58,16 @@ runs:
         set -e
         for version in ${{ inputs.versions }}; do
           ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "$version" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
-          echo " - [$version]($version)" >> versions.md
+          source <($($GITHUB_ACTION_PATH/scripts/nimbleVar.sh)
+          case "$1" in
+            stable)
+              $nimble_version
+              echo " - [$nimble_version (latest)](stable)" >> versions.md ;;
+            HEAD)
+               echo " - [Latest commit](develop)" >> versions.md ;;
+            *)
+              echo " - [$version]($version)" >> versions.md ;;
+          esac
         done
 
     - name: "Generate index for all the versions"
