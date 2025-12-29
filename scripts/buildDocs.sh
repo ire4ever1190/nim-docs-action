@@ -14,7 +14,7 @@ set -e
 
 # Until we need to do all the versions, we can safely source here
 cd $2
-source nimbleVar.sh
+source $( dirname "${BASH_SOURCE[0]}" )/nimbleVar.sh
 
 case "$1" in
   stable)
