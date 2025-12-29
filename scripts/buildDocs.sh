@@ -69,31 +69,33 @@ if [[ $5 == "true" ]]; then
         $3
 fi
 
-# Go through each file and generate it
-for file in $(ls $6);
-do
-  # Change command depending on what the file is
-  # TODO: Support RST
-  case "$file" in
-    *.md)
-      newFile=${file/%md/html}
-      cmd="nim md2html" ;;
-    *.nim)
-      newFile=${file/%nim/html}
-      cmd="nimble -y doc" ;;
-    *)
-      echo "Whats ${file}?"
-      echo "I don't know how to render this file..."
-      exit 1;;
-  esac
-  indexFile="${output_dir}/${newFile/%html/idx}"
-  # Build the file
-  echo "Documenting ${file}..."
-  $cmd --docroot:"$(pwd)" --outdir="${output_dir}" --index:on -d:docgen $file
+if [[ $6 != "" ]]; then
+    # Go through each file and generate it
+    for file in $(ls $6);
+    do
+    # Change command depending on what the file is
+    # TODO: Support RST
+    case "$file" in
+        *.md)
+        newFile=${file/%md/html}
+        cmd="nim md2html" ;;
+        *.nim)
+        newFile=${file/%nim/html}
+        cmd="nimble -y doc" ;;
+        *)
+        echo "Whats ${file}?"
+        echo "I don't know how to render this file..."
+        exit 1;;
+    esac
+    indexFile="${output_dir}/${newFile/%html/idx}"
+    # Build the file
+    echo "Documenting ${file}..."
+    $cmd --docroot:"$(pwd)" --outdir="${output_dir}" --index:on -d:docgen $file
 
-  # Make the title be markupTitle so it gets rendered as a document in theindex.html
-  sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
-done
+    # Make the title be markupTitle so it gets rendered as a document in theindex.html
+    sed -E -i $indexFile -e "s/nimTitle/markupTitle/"
+    done
+fi
 
 # Now build the documentation
 nimble -y doc \
