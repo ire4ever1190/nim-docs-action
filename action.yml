@@ -47,10 +47,15 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: "Run doc generation"
+    - name: "Run doc generation for latest"
       shell: bash
       working-directory: ${{ inputs.project-dir }}
       run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "HEAD" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
+
+    - name: "Run doc generation for stable"
+      shell: bash
+      working-directory: ${{ inputs.project-dir }}
+      run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "stable" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
 
     - name: "Generate index for all the versions"
       shell: bash
