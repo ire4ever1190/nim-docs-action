@@ -15,7 +15,7 @@ set -e
 cd $2
 
 # Make sure we are on the latest commit so we know what the last set version is
-git checkout (git rev-parse --abbrev-ref origin/HEAD | sed 's#^origin/##')
+git checkout $(git rev-parse --abbrev-ref origin/HEAD | sed 's#^origin/##')
 source <($( dirname "${BASH_SOURCE[0]}" )/nimbleVar.sh)
 
 # If its stable, just
