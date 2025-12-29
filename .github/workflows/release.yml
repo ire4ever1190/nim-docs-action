@@ -4,10 +4,6 @@ on:
     tags:
       - v*
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   update-semver:
     name: "Update tags"
