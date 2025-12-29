@@ -52,13 +52,6 @@ runs:
       working-directory: ${{ inputs.project-dir }}
       run: ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "HEAD" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
 
-    # Adds a few extra KB overhead to store theindex.html twice, but
-    # means there are no redirects or anything like that
-    - name: "Copy index"
-      shell: bash
-      working-directory: ${{ inputs.project-dir }}
-      run: cp "${{ inputs.out-dir }}/theindex.html" "${{ inputs.out-dir }}/index.html"
-
     #
     # Github pages deployment
     #

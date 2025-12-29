@@ -95,3 +95,7 @@ nimble -y doc \
     --git.devel:"${4:-$GITHUB_REF_NAME}" \
     -d:docgen \
     $3
+
+# We don't want the user to specify they want to go to the index, and we don't want to deal with redirects
+# File is small, who cares if we duplicate it
+cp "${output_dir}/theindex.html" "${output_dir}/index.html"
