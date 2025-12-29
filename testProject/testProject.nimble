@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.3.0"
+version       = "0.1.0"
 author        = "Jake Leahy"
 description   = "Example project to test doc generation"
 license       = "MIT"

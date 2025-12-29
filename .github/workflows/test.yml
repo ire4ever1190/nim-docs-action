@@ -24,13 +24,23 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: "Turn testProject into separate git repo"
+        run: |
+          cd testProject
+          git init
+          git tag 0.1.0 # Initial tag
+
+          sed -i 's/0.1.0/0.2.0/' testProject.nimble
+          git commit testProject.nimble -m "bump"
+          git tag 0.2.0
+
       - name: "Build documentation"
         uses: "./"
         with:
           project-dir: "testProject/"
           main-file: "src/testProject.nim"
           extra-files: "docs/*.md examples/*.nim"
-          versions: HEAD
+          versions: HEAD stable 0.1.0
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
