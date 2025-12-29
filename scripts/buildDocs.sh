@@ -20,14 +20,17 @@ source <($( dirname "${BASH_SOURCE[0]}" )/nimbleVar.sh)
 
 # If its stable, just
 selected_version=$1
+# what URL to store it under
+version_name=$1
 if [[ $1 == "stable" ]]; then
+    version_name="stable"
     selected_version=$nimble_version
 fi
 
 case "$1" in
   HEAD)
     newFile=${file/%nim/html}
-    found_ver="develop"
+    version_name="develop"
     commit=$(git rev-parse HEAD)
     echo "Generating for latest commit" ;;
   *)
@@ -44,7 +47,7 @@ case "$1" in
     echo "Generating for $found_ver" ;;
 esac
 
-output_dir="$7/${found_ver}"
+output_dir="$7/${version_name}"
 
 git checkout $commit
 
