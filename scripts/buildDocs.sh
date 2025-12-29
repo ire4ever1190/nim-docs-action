@@ -69,7 +69,7 @@ if [[ $5 == "true" ]]; then
         $3
 fi
 
-if [[[ $6 != "" ]]; then
+if [[ $6 != "" ]]; then
     # Go through each file and generate it
     for file in $(ls $6);
     do
