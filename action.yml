@@ -61,7 +61,7 @@ runs:
           source <($(cd ${{ inputs.project-dir }} && $GITHUB_ACTION_PATH/scripts/nimbleVar.sh))
           case "${version}" in
             stable)
-              echo " - [$nimble_version (latest)](stable)" >> versions.md ;;
+              echo " - [${nimble_version} (latest)](stable)" >> versions.md ;;
             HEAD)
               echo " - [Latest commit](develop)" >> versions.md ;;
             *)
