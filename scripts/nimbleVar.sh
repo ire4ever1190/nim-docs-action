@@ -5,4 +5,4 @@
 set -e
 set -o pipefail
 
-nimble dump | sed -E "s/(\w+): \"(.*)\"/nimble_\\1=\\2/"
+nimble dump | sed -E "s/(\w+): \"(.*)\"/export nimble_\\1='\\2'/"
