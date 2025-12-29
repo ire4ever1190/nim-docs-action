@@ -59,7 +59,6 @@ runs:
 
     - name: "Run doc generation"
       shell: bash
-      working-directory: ${{ inputs.project-dir }}
       run: |
         set -e
         for version in ${{ inputs.versions }}; do
