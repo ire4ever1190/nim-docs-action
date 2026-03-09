@@ -5,4 +5,4 @@
 set -e
 set -o pipefail
 
-nimble dump | sed -E "s/(\w+): \"(.*)\"/export nimble_\\1='\\2'/"
+nimble dump --json | jq -r 'to_entries[] | select(.value | type == "string") | "export nimble_\(.key)=\(.value | @sh)"'
