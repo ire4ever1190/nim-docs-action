@@ -56,6 +56,9 @@ runs:
       shell: bash
       run: |
         set -e
+        DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+        git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/$DEFAULT_BRANCH"
+        
         for version in ${{ inputs.versions }}; do
           ${GITHUB_ACTION_PATH}/scripts/buildDocs.sh "$version" "${{ inputs.project-dir }}" "${{ inputs.main-file }}" "${{ inputs.devel-branch }}" "${{ inputs.build-index }}" "${{ inputs.extra-files }}" "${{ inputs.out-dir }}"
           source <(cd ${{ inputs.project-dir }} && $GITHUB_ACTION_PATH/scripts/nimbleVar.sh)
