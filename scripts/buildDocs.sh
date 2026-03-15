@@ -51,9 +51,11 @@ output_dir="$7/${version_name}"
 
 git checkout $commit
 
-# To remove the src/ prefix in the pages we add a dummy
-# .nimble file so that Nim thinks the files are root level
-touch "$nimble_srcDir/dummy.nimble"
+if [[ -n "$nimble_srcDir" ]]; then
+    # To remove the src/ prefix in the pages we add a dummy
+    # .nimble file so that Nim thinks the files are root level
+    touch "$nimble_srcDir/dummy.nimble"
+fi
 
 # To support `importdoc` we need to first build the
 # indexes
