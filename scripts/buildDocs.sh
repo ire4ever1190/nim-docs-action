@@ -60,7 +60,7 @@ fi
 # To support `importdoc` we need to first build the
 # indexes
 if [[ $5 == "true" ]]; then
-    nimble -y doc \
+    nimble --useSystemNim -y doc \
         --project \
         --outdir=${output_dir} \
         --docCmd:skip \
@@ -83,7 +83,7 @@ if [[ $6 != "" ]]; then
         cmd="nim md2html" ;;
         *.nim)
         newFile=${file/%nim/html}
-        cmd="nimble -y doc" ;;
+        cmd="nimble --useSystemNim -y doc" ;;
         *)
         echo "Whats ${file}?"
         echo "I don't know how to render this file..."
@@ -100,7 +100,7 @@ if [[ $6 != "" ]]; then
 fi
 
 # Now build the documentation
-nimble -y doc \
+nimble --useSystemNim -y doc \
     --project \
     --outdir="${output_dir}" \
     --index:on \
