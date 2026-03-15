@@ -38,8 +38,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Setup nim"
-        uses: jiro4989/setup-nim-action@v2
+      - name: "Setup nimble"
+        uses: nim-lang/setup-nimble-action@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
