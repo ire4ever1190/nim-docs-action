@@ -38,10 +38,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Setup nim"
-        uses: jiro4989/setup-nim-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Install Nim"
+        uses: iffy/install-nim@v5
 
       - name: "Build documentation"
         uses: ire4ever1190/nim-docs-action@v1
