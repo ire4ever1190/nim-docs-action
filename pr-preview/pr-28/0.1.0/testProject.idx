@@ -1,2 +1,0 @@
-nimTitle	testProject	testProject.html	module testProject		0
-nim	add	testProject.html#add,int,int	proc add(x, y: int): int		5
